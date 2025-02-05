@@ -52,8 +52,6 @@ form.addEventListener("submit",(e)=>{
         else {
             alert('Please Enter Details !')
         }
-
-    
 });
 
 let editIndx = null;
@@ -175,18 +173,19 @@ function loadProducts() {
 }
 
 function handleSearch() {
-    const input = document.getElementById('filterInput').value;
+    const input = document.getElementById('filterInput').value.toLowerCase();
     let table = document.getElementById("productTable")
     let tr = table.getElementsByTagName('tr');
     for (let i = 0; i < tr.length; i++) {
-        let td = tr[i].getElementsByTagName("td")[1];
-        if (td) {
-            if (td.innerHTML.toLowerCase().indexOf(input.toLowerCase()) > -1) {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
-            }
+        let tds = tr[i].getElementsByTagName("td");
+        let flag = false;
+        for(let td of tds){
+            if (td.innerHTML.toLowerCase().includes(input)) {
+                flag = true;
+                break;
+            } 
         }
+        tr[i].style.display = flag ? "" : "none";
     }
 }
 
