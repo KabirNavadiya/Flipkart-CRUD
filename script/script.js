@@ -18,36 +18,42 @@ form.addEventListener("submit",(e)=>{
     let description = document.getElementById('description').value;
     let img = document.getElementById('productImage').files[0];
 
-    if (name && price && description && img) {
-        const reader = new FileReader();
-        reader.onload = function () {
-
-            if(img.size<600000){
-                let imgURL = reader.result;
-                products = JSON.parse(localStorage.getItem("products")) || [];
-                let newProduct = { id : generateId(), name, category, price, description, img: imgURL };
-                let exists = products.some(prod => {
-                    if (prod.name === newProduct.name) {
-                        return prod.name;
+        if (name && price && description && img) {
+            const reader = new FileReader();
+            try {
+                reader.onload = function () {
+        
+                    if(img.size<600000){
+                        let imgURL = reader.result;
+                        products = JSON.parse(localStorage.getItem("products")) || [];
+                        let newProduct = { id : generateId(), name, category, price, description, img: imgURL };
+                        let exists = products.some(prod => {
+                            if (prod.name === newProduct.name) {
+                                return prod.name;
+                            }
+                        });
+                        if (!exists) {
+                            products.push(newProduct);
+                            localStorage.setItem("products", JSON.stringify(products));
+                        } else {
+                            alert("product with same name already exists")
+                        }
                     }
-                });
-                if (!exists) {
-                    products.push(newProduct);
-                    localStorage.setItem("products", JSON.stringify(products));
-                } else {
-                    alert("product with same name already exists")
+                    else{
+                        alert("file to large max(500kb) !");
+                    }
+                    loadProducts();
                 }
+                reader.readAsDataURL(img);
+            } catch (error) {
+                    console.log(error.message);    
             }
-            else{
-                alert("file to large max(500kb) !");
-            }
-            loadProducts();
         }
-        reader.readAsDataURL(img);
-    }
-    else {
-        alert('Please Enter Details !')
-    }
+        else {
+            alert('Please Enter Details !')
+        }
+
+    
 });
 
 let editIndx = null;
@@ -62,11 +68,10 @@ function editProduct(indx) {
     document.getElementById('eproductId').value = product.id;
     document.getElementById('eproductId').disabled = true;
     document.getElementById('eproductName').value = product.name;
-    // document.getElementById('eproductCategory').value = product.category;
+    document.getElementById('eproductCategory').value = product.category;
     document.getElementById('eprice').value = product.price;
     document.getElementById('edescription').value = product.description;
     document.getElementById('eproductImage').files[0] = product.img;
-
     editform.addEventListener("submit",(e)=>{
         // e.preventDefault();
         const id = document.getElementById('eproductId').value;
@@ -77,17 +82,23 @@ function editProduct(indx) {
         let img = document.getElementById('eproductImage').files[0];
 
         const reader = new FileReader();
-        reader.onload = function () {
-            let imgURL = reader.result;
-            products = JSON.parse(localStorage.getItem("products")) || [];
-            let newProduct = { id, name, price, description, img: imgURL };
-            products[editIndx] = newProduct;
-            localStorage.setItem("products", JSON.stringify(products));
-            loadProducts();
+
+        try {
+            reader.onload = function () {
+                let imgURL = reader.result;
+                products = JSON.parse(localStorage.getItem("products")) || [];
+                let newProduct = { id, name, price, category, description, img: imgURL };
+                products[editIndx] = newProduct;
+                localStorage.setItem("products", JSON.stringify(products));
+                loadProducts();
+            }
+            reader.readAsDataURL(img);
+            editform.style.display = "none";
+            form.style.display = "flex";
+        } catch (error) {
+            alert("No file choosen! ")
         }
-        reader.readAsDataURL(img);
-        editform.style.display = "none";
-        form.style.display = "flex";
+       
     });
 }
 
