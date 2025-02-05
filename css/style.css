@@ -3,12 +3,12 @@ body {
     font-family: Arial, sans-serif;
 }
 
-.container{
-    border: 1px solid black;
-    width: max-content;
+.containerc{
+    border: 1px solid rgba(0, 0, 0, 0.288);
+    width: 40%;
     margin: auto;
     padding: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.404);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.459);
 
 
 }

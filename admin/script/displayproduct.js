@@ -1,63 +1,13 @@
-const form = document.getElementById('productForm');
+
 document.addEventListener("DOMContentLoaded", loadProducts);
+let products = JSON.parse(localStorage.getItem("products")) || [];
+const applyfilter = document.getElementById('filter');
 const editform = document.getElementById('editForm');
 editform.style.display = "none";
-const applyfilter = document.getElementById('filter');
-let products = JSON.parse(localStorage.getItem("products")) || [];
-
-function generateId(){
-    let r = "#" + Math.random().toString(36).substring(2, 6);
-    return r;
-}
-
-form.addEventListener("submit",(e)=>{
-    e.preventDefault();
-    let name = document.getElementById('productName').value;
-    let category =document.getElementById('productCategory').value;
-    let price = document.getElementById('price').value;
-    let description = document.getElementById('description').value;
-    let img = document.getElementById('productImage').files[0];
-
-        if (name && price && description && img) {
-            const reader = new FileReader();
-            try {
-                reader.onload = function () {
-        
-                    if(img.size<600000){
-                        let imgURL = reader.result;
-                        products = JSON.parse(localStorage.getItem("products")) || [];
-                        let newProduct = { id : generateId(), name, category, price, description, img: imgURL };
-                        let exists = products.some(prod => {
-                            if (prod.name === newProduct.name) {
-                                return prod.name;
-                            }
-                        });
-                        if (!exists) {
-                            products.push(newProduct);
-                            localStorage.setItem("products", JSON.stringify(products));
-                        } else {
-                            alert("product with same name already exists")
-                        }
-                    }
-                    else{
-                        alert("file to large max(500kb) !");
-                    }
-                    loadProducts();
-                }
-                reader.readAsDataURL(img);
-            } catch (error) {
-                    console.log(error.message);    
-            }
-        }
-        else {
-            alert('Please Enter Details !')
-        }
-});
 
 let editIndx = null;
 function editProduct(indx) {
 
-    form.style.display="none";
     editform.style.display = "flex";
     editIndx = indx;
     let products = JSON.parse(localStorage.getItem("products"));
@@ -71,7 +21,7 @@ function editProduct(indx) {
     document.getElementById('edescription').value = product.description;
     document.getElementById('eproductImage').files[0] = product.img;
     editform.addEventListener("submit",(e)=>{
-        // e.preventDefault();
+        e.preventDefault();
         const id = document.getElementById('eproductId').value;
         let name = document.getElementById('eproductName').value;
         let category =document.getElementById('eproductCategory').value;
@@ -92,19 +42,12 @@ function editProduct(indx) {
             }
             reader.readAsDataURL(img);
             editform.style.display = "none";
-            form.style.display = "flex";
+            // form.style.display = "flex";
         } catch (error) {
             alert("No file choosen! ")
         }
        
     });
-}
-
-function deleteProduct(indx) {
-    products = JSON.parse(localStorage.getItem("products"));
-    products.splice(indx, 1);
-    localStorage.setItem("products", JSON.stringify(products));
-    loadProducts()
 }
 
 applyfilter.addEventListener("submit",(e)=>{
@@ -120,6 +63,13 @@ applyfilter.addEventListener("submit",(e)=>{
     }
     displayProduct(products);  
 })
+
+function deleteProduct(indx) {
+    products = JSON.parse(localStorage.getItem("products"));
+    products.splice(indx, 1);
+    localStorage.setItem("products", JSON.stringify(products));
+    loadProducts()
+}
 
 function createCell(value){
     var cell =document.createElement('td');
@@ -188,5 +138,3 @@ function handleSearch() {
         tr[i].style.display = flag ? "" : "none";
     }
 }
-
-
